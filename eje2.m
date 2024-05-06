@@ -1,14 +1,8 @@
 clear all
-clc
 
-pkg load optim
-pkg load miscellaneous
-pkg load statistics
-pkg load signal
 
 % Generar la señal
-ojosAbiertos = dlmread('eeg_ojos_abiertos_t7.csv','\t',0,0);
-x = ojosAbiertos';
+x = csvread("Archivos/eeg_ojos_abiertos_t7.csv");
 N = length(x); % Número de muestras
 fs = 200; % Frecuencia de muestreo
 t = 0:1/fs:N/fs; % Tiempo
@@ -28,7 +22,7 @@ for i = 1:L
     segment = x((i-1)*K + 1:(i-1)*K + M); % Seleccionar segmento
     segment = segment - mean(segment); % Remover la media del segmento
     window = hann(M); % Ventana de Hann
-    segment = segment .* window'; % Aplicar ventana
+    segment = segment .* window; % Aplicar ventana
     Pxx_segments(:, i) = abs(fft(segment)).^2; % PSD del segmento
 end
     
@@ -38,10 +32,11 @@ powV = mean(abs(window').^2);
 Pxx = Pxx/powV;
     
 % Calculando las frecuencias correspondientes
-f = (0:M-1) * fs / M;
+w = linspace(0,2, M);
 
 % Graficar la PSD
-plot(f, 10*log10(Pxx));
-xlabel('Frecuencia (Hz)');
+figure();
+plot(w, 10*log10(Pxx));
+xlabel('w/pi');
 ylabel('Densidad Espectral de Potencia (dB/Hz)');
 title('PSD usando el método de Welch');
