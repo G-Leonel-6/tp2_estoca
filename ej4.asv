@@ -58,7 +58,7 @@ grid on
 title('Filtro de ondas Delta')
 xlim([0, 45])
 plot(w, abs(H), color = 'blue', LineWidth = 1)
-line([0 3], [1.01 1.01], color = 'red', linestyle = '--', LineWidth = 1)
+line([0 3], [1.01 1.01], color = 'red', linestyle = '--', )
 line([0 3], [0.99 0.99], color = 'red', linestyle = '--')
 line([5 10], [0.001 0.001], color = 'red', linestyle = '--')
 line([5 10], [-0.001 -0.001], color = 'red', linestyle = '--')

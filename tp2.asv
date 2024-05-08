@@ -171,9 +171,9 @@ SX13_welch_ojos_cerrados = metodo_Welch(x13_ojos_cerrados', N1, M, overlap);
 
 %grafico para ojos abiertos
 figure();
-hold on
 plot(f, 10*log10(SX13_ojos_abiertos), "red", LineWidth = 1); %PSD teorica para P=13
 plot(f1, 10*log10(SX13_welch_ojos_abiertos), "blue", LineWidth = 1);
+hold on
 xlabel("$f[Hz]$",'Interpreter', 'latex');
 ylabel("$S_X(\omega)$", 'Interpreter', 'latex');
 title('PSD señal sintetizada usando el método de Welch (ojos abiertos)');
@@ -190,7 +190,7 @@ plot(f1, 10*log10(SX13_welch_ojos_cerrados), "blue", LineWidth = 1);
 legend("PSD teorica P=13", "PSD estimada", 'Location', 'best');
 xlabel("$f[Hz]$",'Interpreter', 'latex');
 ylabel("$S_X(\omega)$", 'Interpreter', 'latex');
-title('PSD señal sintetizada usando el método de Welch (ojos cerrados)');
+title('PSD señal sintetizada usando el método de Welch (ojos abiertos)');
 xlim([0 pi*fs])
 grid on;
 hold off
