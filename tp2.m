@@ -113,10 +113,9 @@ overlap = M / 2; % Solapamiento del 50%
 
 %estimamos la PSD para los datos del ECG con ojos abiertos mediante el
 %metodo Welch
-
-Sxx_ojos_abiertos = metodo_Welch(x1, N1, M, overlap);
-Sxx_ojos_cerrados = metodo_Welch(x2, N1, M, overlap);
-w1 = linspace(0,2*pi,M);
+Sxx_ojos_abiertos = metodo_Welch(x1.', M, overlap, 500);
+Sxx_ojos_cerrados = metodo_Welch(x2.', M, overlap, 500);
+w1 = linspace(0,2*pi,500);
 f1 = w1*fs;
 
 % Graficar la PSD para ojos abiertos
@@ -162,12 +161,12 @@ x13_ojos_abiertos = filter(G13_ojos_abiertos, [1 -a13_ojos_abiertos'], ruido); %
 %utilizamos la señal sintetizada con P=13 para estimar la PSD mediante el
 %metodo Welch
 
-SX13_welch_ojos_abiertos = metodo_Welch(x13_ojos_abiertos', N1, M, overlap);
+SX13_welch_ojos_abiertos = metodo_Welch(x13_ojos_abiertos, M, overlap, 500);
 
 %ojos cerrados
 x13_ojos_cerrados = filter(G13_ojos_cerrados, [1 -a13_ojos_cerrados'], ruido);
 
-SX13_welch_ojos_cerrados = metodo_Welch(x13_ojos_cerrados', N1, M, overlap);
+SX13_welch_ojos_cerrados = metodo_Welch(x13_ojos_cerrados, M, overlap, 500);
 
 %grafico para ojos abiertos
 figure();
@@ -230,26 +229,26 @@ end
 %estima la PSD de una señal mediante el metodo Welch. Recibe como
 %parametros, ademas de la señal, el largo de la señal,
 %el numero de segmentos M y el solapamiento
-function Pxx = metodo_Welch(x, N, M, overlap)
+function Sx = metodo_Welch(x, M, overlap, nfft) 
 
-    % Calcular PSD usando el método de Welch
-    K = M - overlap; % Distancia entre segmentos
+    N = length(x); % Longitud de la señal
+    ventana = hamming(M);
+    V = sum(abs(ventana).^2)/M; 
+    n_segmentos = floor(N/(overlap)); % Corregido el cálculo del número de segmentos
 
-    % Calculando la PSD usando el método de Welch
-    L = floor((N - M) / K) + 1; % Número total de segmentos
-    Pxx = zeros(M);
+    Sx = zeros(1, nfft);
 
-    for i = 1:L
-        segment = x((i-1)*K + 1:(i-1)*K + M); % Seleccionar segmento
-        %segment = segment - mean(segment); % Remover la media del segmento
-        window = hamming(M); % Ventana de Hamming
-        segment = segment .* window; % Aplicar ventana
-        Pxx = Pxx + abs(fft(segment)).^2; % PSD del segmento
+    for i = 1:n_segmentos-1
+        inicio = (i-1)*floor(overlap)+1;
+        fin = inicio + M - 1;
+
+        seg = x(inicio:fin);
+        x_i = ventana' .* seg;
+        X_i = fft(x_i, nfft);
+        Sx =  Sx + ((abs(X_i)).^2);
+    
     end
 
-    % Promediando las PSD de los segmentos
-    Pxx = (1/N) * Pxx;
-    powV = (1/M) * sum((abs(window').^2));
-    Pxx = Pxx/powV;
+    Sx = Sx/(M*V*n_segmentos);
 
 end
